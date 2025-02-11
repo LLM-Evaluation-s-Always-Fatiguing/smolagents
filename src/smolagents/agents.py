@@ -625,9 +625,9 @@ You have been provided with these additional arguments, that you can access usin
         self.memory.replay(self.logger, detailed=detailed)
 
     def __call__(self, task: str, **kwargs):
-        """
-        This method is called only by a manager agent.
-        Adds additional prompting for the managed agent, runs it, and wraps the output.
+        """Adds additional prompting for the managed agent, runs it, and wraps the output.
+
+        This method is called only by a managed agent.
         """
         full_task = populate_template(
             self.prompt_templates["managed_agent"]["task"],
