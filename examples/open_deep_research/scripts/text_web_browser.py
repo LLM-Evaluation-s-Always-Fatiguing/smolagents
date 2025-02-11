@@ -440,6 +440,47 @@ DO NOT use this tool for .pdf or .txt or .htm files: for these types of files us
         return f"File was downloaded and saved under path {new_path}."
 
 
+class WikipediaSearchTool(Tool):
+    name = "wikipedia_search"
+    description = "Search Wikipedia articles and get detailed information. This tool should be used before archive search when looking for encyclopedic or factual information."
+    inputs = {
+        "query": {"type": "string", "description": "The search query for Wikipedia article."},
+        "lang": {
+            "type": "string",
+            "description": "Language code for Wikipedia (e.g. 'en' for English, 'zh' for Chinese). Defaults to 'en'.",
+            "nullable": True
+        },
+        "before": {
+            "type": "string",
+            "description": "Optional date in YYYY-MM-DD format. If provided, will return the article version before this date.",
+            "nullable": True
+        }
+    }
+    output_type = "string"
+
+    def __init__(self, browser):
+        super().__init__()
+        self.browser = browser
+
+    def forward(self, query: str, lang: Optional[str] = None, before: Optional[str] = None) -> str:
+        from .wikipedia import search_wikipedia
+        result = search_wikipedia(query, lang=lang or "en", before=before)
+
+        if "error" in result:
+            return f"Error: {result['error']}"
+
+        content = f"# {result['title']}\n\n{result['extract']}\n\nURL: {result['url']}"
+
+        if "revision" in result:
+            content += f"\n\nRevision Info:\nID: {result['revision']['id']}\n"
+            content += f"Timestamp: {result['revision']['timestamp']}\n"
+            content += f"Revision URL: {result['revision']['url']}"
+
+        self.browser._set_page_content(content)
+        header, content = self.browser._state()
+        return header.strip() + "\n=======================\n" + content
+
+
 class ArchiveSearchTool(Tool):
     name = "find_archived_url"
     description = "Given a url, searches the Wayback Machine and returns the archived version of the url that's closest in time to the desired date."

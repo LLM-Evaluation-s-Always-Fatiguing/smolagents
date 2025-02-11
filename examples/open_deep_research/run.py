@@ -14,6 +14,7 @@ from scripts.text_web_browser import (
     SearchInformationTool,
     SimpleTextBrowser,
     VisitTool,
+    WikipediaSearchTool,
 )
 from scripts.visual_qa import visualizer
 
@@ -99,6 +100,7 @@ def main():
     browser = SimpleTextBrowser(**BROWSER_CONFIG)
 
     WEB_TOOLS = [
+        WikipediaSearchTool(browser),
         SearchInformationTool(browser),
         VisitTool(browser),
         PageUpTool(browser),
@@ -137,6 +139,7 @@ def main():
         planning_interval=4,
         managed_agents=[text_webbrowser_agent],
     )
+    manager_agent.visualize()
 
     answer = manager_agent.run(args.question)
 
