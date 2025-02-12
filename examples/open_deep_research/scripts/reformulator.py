@@ -54,7 +54,7 @@ Your FINAL ANSWER should be a number OR as few words as possible OR a comma sepa
 ADDITIONALLY, your FINAL ANSWER MUST adhere to any formatting instructions specified in the original question (e.g., alphabetization, sequencing, units, rounding, decimal places, etc.)
 If you are asked for a number or answer a question that requires a number, output ONLY the number without any text, template or units.
 If the question involves quantities with units like thousand/million/billion, only output the numeric value without the unit.
-If you are asked for a string, don't use articles or abbreviations (e.g. for cities), unless specified otherwise. Don't output any final sentence punctuation such as '.', '!', or '?'.
+If you are asked for a string (including yes/no/true/false answers), don't use articles or abbreviations (e.g. for cities), unless specified otherwise. Don't output any final sentence punctuation such as '.', '!', or '?'.
 If you are asked for a comma separated list, apply the above rules depending on whether the elements are numbers or strings.
 If you are unable to determine the final answer but can make a reasonable estimate based on the information available, output your best numerical estimate or most likely answer following the above formatting rules.
 If you are completely unable to determine or estimate an answer, output 'FINAL ANSWER: Unable to determine'
