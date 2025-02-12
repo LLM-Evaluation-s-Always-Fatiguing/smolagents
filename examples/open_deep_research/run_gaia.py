@@ -77,6 +77,7 @@ def parse_args():
     parser.add_argument("--model-id", type=str, default="o1")
     parser.add_argument("--api-base", type=str, default=None)
     parser.add_argument("--run-name", type=str, required=True)
+    parser.add_argument("--question-id", type=str, help="Specific question ID to run")
     return parser.parse_args()
 
 
@@ -262,7 +263,7 @@ Here is the task:
     append_answer(annotated_example, answers_file)
 
 
-def get_examples_to_answer(answers_file, eval_ds) -> List[dict]:
+def get_examples_to_answer(answers_file, eval_ds, question_id=None) -> List[dict]:
     print(f"Loading answers from {answers_file}...")
     try:
         done_questions = pd.read_json(answers_file, lines=True)["question"].tolist()
@@ -271,7 +272,16 @@ def get_examples_to_answer(answers_file, eval_ds) -> List[dict]:
         print("Error when loading records: ", e)
         print("No usable records! ▶️ Starting new.")
         done_questions = []
-    return [line for line in eval_ds.to_list() if line["question"] not in done_questions]
+
+    all_tasks = [line for line in eval_ds.to_list() if line["question"] not in done_questions]
+
+    if question_id:
+        filtered_tasks = [task for task in all_tasks if task["task_id"] == question_id]
+        if not filtered_tasks:
+            print(f"Warning: No task found with ID {question_id}")
+            return []
+        return filtered_tasks
+    return all_tasks
 
 
 def main():
@@ -279,7 +289,11 @@ def main():
     print(f"Starting run with arguments: {args}")
 
     answers_file = f"output/{SET}/{args.run_name}.jsonl"
-    tasks_to_run = get_examples_to_answer(answers_file, eval_ds)
+    tasks_to_run = get_examples_to_answer(answers_file, eval_ds, args.question_id)
+
+    if not tasks_to_run:
+        print("No tasks to run!")
+        return
 
     with ThreadPoolExecutor(max_workers=args.concurrency) as exe:
         futures = [
