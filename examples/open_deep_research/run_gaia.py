@@ -186,12 +186,9 @@ def answer_single_question(example, model_id, answers_file, visual_inspection_to
         max_completion_tokens=8192,
         reasoning_effort="high",
     )
-    # model = HfApiModel("Qwen/Qwen2.5-72B-Instruct", provider="together")
-    #     "https://lnxyuvj02bpe6mam.us-east-1.aws.endpoints.huggingface.cloud",
-    #     custom_role_conversions=custom_role_conversions,
-    #     # provider="sambanova",
-    #     max_tokens=8096,
-    # )
+
+    reformulation_model = LiteLLMModel("gpt-4-turbo")
+
     document_inspection_tool = TextInspectorTool(model, 100000)
 
     agent = create_agent_hierarchy(model)
@@ -222,7 +219,7 @@ Here is the task:
 
         agent_memory = agent.write_memory_to_messages(summary_mode=True)
 
-        final_result = prepare_response(augmented_question, agent_memory, reformulation_model=model)
+        final_result = prepare_response(augmented_question, agent_memory, reformulation_model=reformulation_model)
 
         output = str(final_result)
         for memory_step in agent.memory.steps:
